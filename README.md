@@ -20,3 +20,4 @@
 * [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)
 * [Claude Agent SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk)
 * [Model Context Protocol (MCP)](https://modelcontextprotocol.io/docs/develop/build-server)
+* [Embeddings](https://docs.claude.com/en/docs/build-with-claude/embeddings)
