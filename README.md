@@ -10,7 +10,7 @@
 
 
 ## Start developing
-1. Try to get something small working fast (e.g. just basic SQL querying)
+1. Try to get something small working very fast (e.g. just basic SQL querying)
 2. Start with easy questions, then go further
 
 
