@@ -1,4 +1,4 @@
-# AIM AI Agents Hackathon Repository
+# AIM Hackathon - Agentic AI for ​Sustainability Questions​
 4th of October 2025
 
 
