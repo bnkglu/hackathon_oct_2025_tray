@@ -4,12 +4,14 @@
 [//]: # (<img src="assets/flyer.png" alt="Hackathon Flyer" width="400"/>)
 
 ## Getting Started
-1. clone repository
-2. set up the package manager [uv](https://docs.astral.sh/uv/getting-started/installation/): `pip install uv`
-3. Set up environment with uv: `uv sync`
-
+1. Clone repository
+2. Change ".env.template" to ".env" and add your Anthropic API key
+3. Set up the package manager [uv](https://docs.astral.sh/uv/getting-started/installation/): `pip install uv`
+4. Set up environment with uv: `uv sync`
+5. Add new packages (as with pip): `uv add <package-name>`
 
 ## Start Developing (Hints)
+1. Start with the agent.py file
 1. Start small -> e.g. answer easy SQL questions
 2. Evaluate from the beginning
    - submit to the public leaderboard only 1-3 questions to get familiar with the process and format
