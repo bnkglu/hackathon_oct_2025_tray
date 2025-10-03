@@ -6,7 +6,6 @@ raw file available here:
 https://github.com/modelcontextprotocol/quickstart-resources/blob/main/mcp-client-python/client.py
 """
 
-import asyncio
 from typing import Optional
 from contextlib import AsyncExitStack
 
@@ -14,7 +13,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 from pathlib import Path
-from src.utils import get_root_dir
+from src.util.utils import get_root_dir
 
 # from anthropic import Anthropic  # [EJ]: moved Claude inference to agent.py
 from dotenv import load_dotenv
