@@ -15,19 +15,16 @@ from mcp.client.stdio import stdio_client
 from pathlib import Path
 from src.util.utils import get_root_dir
 
-# from anthropic import Anthropic  # [EJ]: moved Claude inference to agent.py
 from dotenv import load_dotenv
 
 load_dotenv()  # load environment variables from .env
 
 
 class MCPClient:
-    # def __init__(self):
     def __init__(self):
         # Initialize session and client objects
         self.session: Optional[ClientSession] = None
         self.exit_stack = AsyncExitStack()
-        # self.anthropic = Anthropic() # [EJ]: moved Claude inference to agent.py
 
     async def connect_to_server(self, command: str, server_args: list | str | Path):
         """Connect to an MCP server"""
@@ -82,4 +79,14 @@ class MCPClient:
 
     async def cleanup(self):
         """Clean up resources"""
-        await self.exit_stack.aclose()
+        if self.exit_stack is None:
+            return
+        try:
+            await self.exit_stack.aclose()
+        except Exception as e:
+            print(f"Warning: Error during client cleanup: {e}")
+            # Don't try to close again, just mark as closed
+            pass
+        finally:
+            self.exit_stack = None
+            self.session = None

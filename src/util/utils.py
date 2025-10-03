@@ -31,5 +31,5 @@ def get_root_dir(project_name: str = project_name) -> Path:
 
 if __name__ == "__main__":
     # test the function:
-    root_dir = get_root_dir(project_name)
+    root_dir = get_root_dir()
     print(f"Project root directory: {root_dir}")

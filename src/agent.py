@@ -23,27 +23,53 @@ class Agent:
 
     async def initialise_servers(self):
 
+        # Initialize tools lists
+        self.wikipedia_tools = []
+        self.database_tools = []
+
         # Initialise the Wikipedia MCP server
-        self.wikipedia_client = MCPClient()
-        await self.wikipedia_client.connect_to_server("wikipedia-mcp", ["--transport", "stdio"])
+        try:
+            self.wikipedia_client = MCPClient()
+            await self.wikipedia_client.connect_to_server("python", ["-m", "wikipedia_mcp", "--transport", "stdio"])
 
-        wikipedia_tools = await self.wikipedia_client.list_tools()
-        self.wikipedia_tools = [{
-            "name": tool.name,
-            "description": tool.description,
-            "input_schema": tool.inputSchema
-        } for tool in wikipedia_tools]
+            wikipedia_tools = await self.wikipedia_client.list_tools()
+            self.wikipedia_tools = [{
+                "name": tool.name,
+                "description": tool.description,
+                "input_schema": tool.inputSchema
+            } for tool in wikipedia_tools]
+            print("Wikipedia MCP server initialized successfully")
+        except Exception as e:
+            print(f"Warning: Failed to initialize Wikipedia MCP server: {e}")
+            # Ensure client is properly cleaned up if initialization fails
+            if hasattr(self, 'wikipedia_client') and self.wikipedia_client is not None:
+                try:
+                    await self.wikipedia_client.cleanup()
+                except:
+                    pass
+            self.wikipedia_client = None
 
-        # Initialise the remote database MCP server
-        self.database_client = MCPClient()
-        await self.database_client.connect_to_server("python", ["-m", "src.mcp_servers.database"])
+        # Initialise the OWID database MCP server
+        try:
+            self.database_client = MCPClient()
+            await self.database_client.connect_to_server("python", ["-m", "src.mcp_servers.remote_database"])
 
-        database_tools = await self.database_client.list_tools()
-        self.database_tools = [{
-            "name": tool.name,
-            "description": tool.description,
-            "input_schema": tool.inputSchema
-        } for tool in database_tools]
+            database_tools = await self.database_client.list_tools()
+            self.database_tools = [{
+                "name": tool.name,
+                "description": tool.description,
+                "input_schema": tool.inputSchema
+            } for tool in database_tools]
+            print("Database MCP server initialized successfully")
+        except Exception as e:
+            print(f"Warning: Failed to initialize Database MCP server: {e}")
+            # Ensure client is properly cleaned up if initialization fails
+            if hasattr(self, 'database_client') and self.database_client is not None:
+                try:
+                    await self.database_client.cleanup()
+                except:
+                    pass
+            self.database_client = None
 
         # TODO: add other MCP servers here as needed
 
@@ -91,10 +117,23 @@ async def main(verbose: bool = True):
                 print(f"Error answering question {i}: {e}")
                 answers.append(None)  # keep placeholder so indexes match
     finally:
-        await agent.wikipedia_client.cleanup()
-        await agent.database_client.cleanup()
+        if hasattr(agent, 'wikipedia_client') and agent.wikipedia_client is not None:
+            try:
+                await agent.wikipedia_client.cleanup()
+            except Exception as e:
+                print(f"Warning: Error cleaning up Wikipedia client: {e}")
+            finally:
+                agent.wikipedia_client = None
+
+        if hasattr(agent, 'database_client') and agent.database_client is not None:
+            try:
+                await agent.database_client.cleanup()
+            except Exception as e:
+                print(f"Warning: Error cleaning up Database client: {e}")
+            finally:
+                agent.database_client = None
         # Cleanup other clients as needed here
-    # TODO: write answers to json file OR send to central server with HTTP Post
+    # TODO: save answers in json file and/or send directly to central server
     return answers
 
 if __name__ == "__main__":
