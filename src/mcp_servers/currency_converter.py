@@ -7,11 +7,11 @@ from src.util.utils import get_root_dir
 import json
 
 # Load the official currency rates (from 26 September 2025)
-with open(get_root_dir() / 'data' / 'currency_rates.json', 'r') as f:
+with open(get_root_dir() / 'data' / 'currencies' / 'currency_rates.json', 'r') as f:
     currency_rates = json.load(f)
 
 # Load the currency names
-with open(get_root_dir() / 'data' / 'currency_names.json', 'r') as f:
+with open(get_root_dir() / 'data' / 'currencies' / 'currency_names.json', 'r') as f:
     currency_names = json.load(f)
 currency_names.update({"EUR": "Euro"}) # add Euro manually as it's not in the list
 
