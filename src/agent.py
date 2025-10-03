@@ -8,8 +8,7 @@ https://github.com/modelcontextprotocol/quickstart-resources/blob/main/mcp-clien
 """
 
 import asyncio
-from src.client import MCPClient
-from src.utils import get_root_dir
+from src.util.client import MCPClient
 
 from anthropic import Anthropic
 from dotenv import load_dotenv
@@ -18,7 +17,7 @@ import os
 load_dotenv()  # load environment variables from .env
 
 class Agent:
-    def __init__(self):
+    def _init_(self):
         self.tools = []
         self.anthropic = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY")) # Initialise Claude
 
@@ -28,15 +27,27 @@ class Agent:
         self.wikipedia_client = MCPClient()
         await self.wikipedia_client.connect_to_server("wikipedia-mcp", ["--transport", "stdio"])
 
-        self.wikipedia_tools = ... # TODO: get Wikipedia tools from client
+        wikipedia_tools = await self.wikipedia_client.list_tools()
+        self.wikipedia_tools = [{
+            "name": tool.name,
+            "description": tool.description,
+            "input_schema": tool.inputSchema
+        } for tool in wikipedia_tools]
 
         # Initialise the remote database MCP server
         self.database_client = MCPClient()
         await self.database_client.connect_to_server("python", ["-m", "src.mcp_servers.database"])
 
+        database_tools = await self.database_client.list_tools()
+        self.database_tools = [{
+            "name": tool.name,
+            "description": tool.description,
+            "input_schema": tool.inputSchema
+        } for tool in database_tools]
+
         # TODO: add other MCP servers here as needed
 
-        self.tools = self.wikipedia_tools + []  # TODO: put all tools here
+        self.tools = self.wikipedia_tools + self.database_tools + []  # TODO: put all tools here
 
     async def answer_question(self, question: str) -> str:
         """
@@ -53,6 +64,8 @@ class Agent:
             messages=messages,
             tools=self.tools
         )
+
+        # TODO: IMPORTANT: if you put Claude calls in a while loop, make sure to enforce MAX ITERATIONS
 
         # TODO: parse the response and call tools as needed
 
@@ -84,5 +97,5 @@ async def main(verbose: bool = True):
     # TODO: write answers to json file OR send to central server with HTTP Post
     return answers
 
-if __name__ == "__main__":
+if __name__ == "_main_":
     answers = asyncio.run(main())

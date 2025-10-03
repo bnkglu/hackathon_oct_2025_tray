@@ -3,7 +3,7 @@ This is an implementation of an MCP server that provides currency conversion
 """
 
 from mcp.server.fastmcp import FastMCP
-from src.utils import get_root_dir
+from src.util.utils import get_root_dir
 import json
 
 # Load the official currency rates (from 26 September 2025)
@@ -15,7 +15,7 @@ with open(get_root_dir() / 'data' / 'currency_names.json', 'r') as f:
     currency_names = json.load(f)
 currency_names.update({"EUR": "Euro"}) # add Euro manually as it's not in the list
 
-# TODO: implement you MCP server here
+# TODO: implement your MCP server here
 
 @mcp.tool()
 def convert_currency():
