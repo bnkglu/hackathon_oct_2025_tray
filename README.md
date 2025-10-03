@@ -6,7 +6,7 @@
 ## Getting Started
 1. clone repository
 2. set up the package manager [uv](https://docs.astral.sh/uv/getting-started/installation/): `pip install uv`
-3. Set up environment with uv: `sync`
+3. Set up environment with uv: `uv sync`
 
 
 ## Start Developing (Hints)
