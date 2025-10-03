@@ -17,7 +17,7 @@ import os
 load_dotenv()  # load environment variables from .env
 
 class Agent:
-    def _init_(self):
+    def __init__(self):
         self.tools = []
         self.anthropic = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY")) # Initialise Claude
 
@@ -97,5 +97,5 @@ async def main(verbose: bool = True):
     # TODO: write answers to json file OR send to central server with HTTP Post
     return answers
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     answers = asyncio.run(main())
