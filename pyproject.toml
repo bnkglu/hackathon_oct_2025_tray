@@ -1,7 +1,7 @@
 [project]
-name = "hackathon-oct-2025-internal"
+name = "hackathon-oct-2025"
 version = "0.1.0"
-description = "Add your description here"
+description = "Official repository for the AIM Hackathon October 2025: Agentic AI  for sustainability questions"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

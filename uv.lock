@@ -342,7 +342,7 @@ wheels = [
 ]
 
 [[package]]
-name = "hackathon-oct-2025-internal"
+name = "hackathon-oct-2025"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
