@@ -64,7 +64,7 @@
     ]
   },
   "5": {
-    "question": "What were the annual CO2 emissions in tonnes for Austria in 2000?",
+    "question": "What were the annual total greenhouse gas emissions in tonnes for Austria in 2000?",
     "answer": 76664000.0,
     "answer_type": "float",
     "unit": "tonnes",
