@@ -571,7 +571,7 @@
     ]
   },
   "39": {
-    "question": "What was the absolute change in total territorial CO2 emissions for the World between 2000 and 2020?",
+    "question": "What was the absolute difference (non-negative value) in total territorial CO2 emissions for the World between 2000 and 2020?",
     "answer": 9615.974,
     "answer_type": "float",
     "unit": "million tonnes",
@@ -585,8 +585,8 @@
     ]
   },
   "40": {
-    "question": "What is the absolute difference in fossil fuel consumption for the United Kingdom between 2020 and 2015?",
-    "answer": -383.323,
+    "question": "What is the absolute difference (non-negative value) in fossil fuel consumption for the United Kingdom between 2020 and 2015?",
+    "answer": 383.323,
     "answer_type": "float",
     "unit": "TWh",
     "difficulty": "medium",
@@ -715,8 +715,8 @@
     ]
   },
   "49": {
-    "question": "What is the absolute difference between the CO2 emissions per GDP of the United States and India in 2020?",
-    "answer": -0.009,
+    "question": "What is the absolute difference (non-negative value) between the CO2 emissions per GDP of the United States and India in 2020?",
+    "answer": 0.009,
     "answer_type": "float",
     "unit": "tonnes",
     "difficulty": "hard",
@@ -897,8 +897,8 @@
     ]
   },
   "62": {
-    "question": "What was the absolute change in Coal CO2 emissions for Germany between 2011 and 2021?",
-    "answer": -107.475,
+    "question": "What was the absolute difference (non-negative value) in Coal CO2 emissions for Germany between 2011 and 2021?",
+    "answer": 107.475,
     "answer_type": "float",
     "unit": "million tonnes",
     "difficulty": "medium",
@@ -953,7 +953,7 @@
     ]
   },
   "66": {
-    "question": "What is the absolute difference between the World's GDP and China's GDP in 2019, in nominal US dollars?",
+    "question": "What is the absolute difference (non-negative value) between the World's GDP and China's GDP in 2019, in nominal US dollars?",
     "answer": 98517425061888000,
     "answer_type": "float",
     "unit": "US dollars",
@@ -981,7 +981,7 @@
     ]
   },
   "68": {
-    "question": "What is the absolute difference in percentage points between Fossil Fuel Share of Energy and Coal Share of Energy for India in 2018?",
+    "question": "What is the absolute difference (non-negative value) in percentage points between Fossil Fuel Share of Energy and Coal Share of Energy for India in 2018?",
     "answer": 36.403,
     "answer_type": "float",
     "unit": "percentage points",
@@ -1041,8 +1041,8 @@
     ]
   },
   "72": {
-    "question": "Calculate the ratio of Fossil Electricity to Low Carbon Electricity for Germany in 2000 and 2020, and state the absolute change in this ratio.",
-    "answer": -0.981,
+    "question": "Calculate the ratio of Fossil Electricity to Low Carbon Electricity for Germany in 2000 and 2020, and state the absolute difference (non-negative value) in this ratio.",
+    "answer": 0.981,
     "answer_type": "float",
     "unit": "Absolute Change in Ratio",
     "difficulty": "hard",
@@ -1069,7 +1069,7 @@
     ]
   },
   "74": {
-    "question": "What is the absolute difference between global Coal Consumption and global Gas Consumption in 2018?",
+    "question": "What is the absolute difference (non-negative value) between global Coal Consumption and global Gas Consumption in 2018?",
     "answer": 5580.269,
     "answer_type": "float",
     "unit": "TWh",
@@ -1083,7 +1083,7 @@
     ]
   },
   "75": {
-    "question": "Calculate the absolute change in percentage points of coal electricity's share in total electricity generation for India between 2005 and 2020.",
+    "question": "Calculate the absolute difference (non-negative value) in percentage points of coal electricity's share in total electricity generation for India between 2005 and 2020.",
     "answer": 4.387,
     "answer_type": "float",
     "unit": "percentage points",
