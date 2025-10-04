@@ -64,7 +64,7 @@
     ]
   },
   "5": {
-    "question": "What were the annual CO2 emissions in tonnes for Austria in 2000?",
+    "question": "What were the annual total greenhouse gas emissions including land use in tonnes for Austria in 2000?",
     "answer": 76664000.0,
     "answer_type": "float",
     "unit": "tonnes",
@@ -79,7 +79,7 @@
     ]
   },
   "6": {
-    "question": "What were the annual total greenhouse gas emissions in tonnes for Austria in 1923?",
+    "question": "What were the annual total greenhouse gas emissions including land use in tonnes for Austria in 1923?",
     "answer": 22427000.0,
     "answer_type": "float",
     "unit": "tonnes",
@@ -126,7 +126,7 @@
     "comment": "Found in the 'Health and safety metrics represented in headcount' table in the Sustainability Statement section. The KPI is named 'Number of recordable work-related accidents' for the year 2024.",
     "sources": [
       {
-        "source_name": "Annual Report Erste Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 215
       }
@@ -141,7 +141,7 @@
     "comment": "\"Found in the 'Traning and skills development metrics' table in the Sustainability Statement. The value represents the 'Average training hours' per employee for 2024.\"",
     "sources": [
       {
-        "source_name": "Annual Report Erste Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 292
       }
@@ -156,7 +156,7 @@
     "comment": "'In 2024, 39 data breach reports were notified to the relevant data protection authority.'",
     "sources": [
       {
-        "source_name": "Annual Report Erste Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 300
       }
@@ -171,7 +171,7 @@
     "comment": "From consolidated balance sheet, given as total equity. Converted from EUR to CHF by multiplying with 0.9332",
     "sources": [
       {
-        "source_name": "Annual Report Erste Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 316
       },
@@ -191,7 +191,7 @@
     "comment": "Explicitly stated that 'The CO2e emissions of Erste Group's own operations and in the upstream value chain contribute to climate change and thus to global warming.'",
     "sources": [
       {
-        "source_name": "Annual Report Erste Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 236
       }
@@ -206,7 +206,7 @@
     "comment": "Target explicitly stated in sustainability section.",
     "sources": [
       {
-        "source_name": "Annual Report Erste_Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 248
       }
@@ -221,7 +221,7 @@
     "comment": "Confirmed 'Sustainable financing - actuals and targets' table.",
     "sources": [
       {
-        "source_name": "Annual Report Erste_Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 263
       }
@@ -236,7 +236,7 @@
     "comment": "Renewable energy financing went up from 486.1 to 917: (917 - 486.1) / 486.1.",
     "sources": [
       {
-        "source_name": "Annual Report Erste_Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 237
       }
@@ -266,7 +266,7 @@
     "comment": "Explicitly stated as not externally validated: 'The measurement of this metrics has not been validated by an external body, apart from the assurance provider.'",
     "sources": [
       {
-        "source_name": "Annual Report Erste_Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 263
       }
@@ -281,7 +281,7 @@
     "comment": "MSCI rating was AA, not AAA.",
     "sources": [
       {
-        "source_name": "Annual Report Erste_Group_2024.pdf",
+        "source_name": "Erste_Group_2024.pdf",
         "source_type": "pdf",
         "page_number": 6
       }
@@ -305,8 +305,8 @@
     "comment": "Presented in the Environment data table.",
     "sources": [
       {
-        "source_name": "GSK_esg-performance-report-2023 GSK.pdf",
-        "source_type": "PDF",
+        "source_name": "GSK_esg-performance-report_2023.pdf",
+        "source_type": "pdf",
         "page_number": 23
       }
     ]
@@ -496,7 +496,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -510,7 +510,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -524,7 +524,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -538,7 +538,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -552,7 +552,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -566,7 +566,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -580,7 +580,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -594,7 +594,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -608,7 +608,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -622,7 +622,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -636,7 +636,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -650,7 +650,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -658,13 +658,13 @@
     "question": "What percentage of electricity demand was met by low-carbon sources for Canada in 2021?",
     "answer": 87.603,
     "answer_type": "float",
-    "unit": "%",
+    "unit": "percent",
     "difficulty": "hard",
     "comment": "Calculated as (low_carbon_electricity / electricity_demand) * 100. 527.93/602.64) * 100",
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -678,7 +678,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -692,7 +692,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -706,11 +706,11 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       },
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -724,7 +724,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -732,27 +732,27 @@
     "question": "What was the difference of percentage share of solar electricity in total low-carbon electricity generation for Spain in 2021 compared to 2020?",
     "answer": 2.043,
     "answer_type": "float",
-    "unit": "%",
+    "unit": "percent",
     "difficulty": "hard",
     "comment": "Calculated simply as solar_share_elec (2021) - solar_share_elec (2020); tricky question - use electricity, not energy. Precision 3 decimal places.",
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
   "51": {
-    "question": "What was the annual average biofuel consumption for Germany over the period 2012-2019?",
+    "question": "What was the annual average biofuel consumption for Germany over the period 2012-2018?",
     "answer": 32.123,
     "answer_type": "float",
     "unit": "TWh",
     "difficulty": "hard",
-    "comment": "Calculated as the average of 'coal_consumption' for Germany from 6 available years between 2012 and 2018. Precision 3 decimal places.",
+    "comment": "Calculated as the average of biofuel consumption for Germany from 7 available years between 2012 and 2018.",
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -766,7 +766,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -780,7 +780,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -794,7 +794,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -808,7 +808,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -822,7 +822,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -836,7 +836,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -850,7 +850,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -864,7 +864,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -872,13 +872,13 @@
     "question": "What was the total share of fossil energy (in percent) for Brazil in 1990?",
     "answer": 56.326,
     "answer_type": "float",
-    "unit": "%",
+    "unit": "percent",
     "difficulty": "easy",
     "comment": "Direct retrieval of column 'fossil_share_energy' for Brazil in 1990.",
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -892,7 +892,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -906,7 +906,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -920,7 +920,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -928,13 +928,13 @@
     "question": "What was the percentage change in CO2 per unit energy for the United States between 2000 and 2020?",
     "answer": -15.487,
     "answer_type": "float",
-    "unit": "%",
+    "unit": "percent",
     "difficulty": "medium",
     "comment": "Percentage change in 'co2_per_unit_energy'; 100*(0.191 - 0.226) / 0.226",
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -948,7 +948,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -962,7 +962,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -976,7 +976,7 @@
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -990,7 +990,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -998,13 +998,13 @@
     "question": "What percentage of the World's cumulative CO2 from cement was contributed by China up to 2021?",
     "answer": 32.464,
     "answer_type": "float",
-    "unit": "%",
+    "unit": "percent",
     "difficulty": "medium",
     "comment": "Calculated as (China cumulative_cement_co2 / World cumulative_cement_co2) * 100.",
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -1012,17 +1012,17 @@
     "question": "Calculate the ratio of Global Fossil Fuel Consumption (TWh) to Global Territorial CO2 Emissions (million tonnes) in 1980 versus 2020, and state the percentage change in this ratio.",
     "answer": 2.135,
     "answer_type": "float",
-    "unit": "% change",
+    "unit": "percent",
     "difficulty": "hard",
     "comment": "Calculated as % change of (Fossil Consumption / CO2 Ratio) from 1980 to 2020. Cross-file calculation. =100*((130121.617/35126.527) - (70683.391/19488.523))/ (70683.391/19488.523)",
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       },
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -1030,13 +1030,13 @@
     "question": "What was the Compound Annual Growth Rate (CAGR) of CO2 emissions per capita for India between 2000 and 2021 (in percentage points)?",
     "answer": 3.448,
     "answer_type": "float",
-    "unit": "%",
+    "unit": "percent",
     "difficulty": "hard",
     "comment": "Calculated as CAGR over 21 years for 'co2_per_capita'.",
     "sources": [
       {
         "source_name": "owid_co2_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -1050,7 +1050,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -1064,7 +1064,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -1078,7 +1078,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
@@ -1092,7 +1092,7 @@
     "sources": [
       {
         "source_name": "owid_energy_data",
-        "source_type": "db"
+        "source_type": "database"
       }
     ]
   },
