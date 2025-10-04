@@ -697,10 +697,10 @@
     ]
   },
   "48": {
-    "question": "What was the energy consumption from non-fossil energy sources per capita for the United States in 2021 (TWh per person)?",
+    "question": "What was the energy consumption from non-fossil energy sources per capita for the United States in 2021 (kWh per person)?",
     "answer": 14071.848,
     "answer_type": "float",
-    "unit": "TWh per capita",
+    "unit": "kWh per capita",
     "difficulty": "hard",
     "comment": "Calculated as energy_per_capita - fossil_energy_per_capita; tricky question, several ways to calculate. Precision 3 decimal places.",
     "sources": [
