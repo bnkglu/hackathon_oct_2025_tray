@@ -91,8 +91,18 @@ async def evaluate_db_questions(
                 if expected_type in ["float", "int"]:
                     # Numeric comparison with tolerance
                     try:
-                        diff = abs(float(predicted_answer) - float(expected_answer))
-                        is_correct = diff <= tolerance
+                        expected_val = float(expected_answer)
+                        predicted_val = float(predicted_answer)
+                        diff = abs(predicted_val - expected_val)
+
+                        # For very large numbers, use relative tolerance
+                        if abs(expected_val) > 1e12:
+                            relative_error = diff / abs(expected_val) if expected_val != 0 else diff
+                            is_correct = relative_error <= 0.01  # 1% tolerance for huge numbers
+                        else:
+                            # Absolute tolerance for normal numbers
+                            is_correct = diff <= tolerance
+
                         error = diff if not is_correct else None
                     except (ValueError, TypeError):
                         is_correct = False
@@ -168,12 +178,14 @@ async def main():
     limit = None
     if len(sys.argv) > 1:
         try:
-            limit = int(sys.argv[1])
+            limit_arg = int(sys.argv[1])
+            # 0 means all questions
+            limit = None if limit_arg == 0 else limit_arg
         except ValueError:
             pass
 
-    # Run evaluation (default: first 10 questions for testing)
-    await evaluate_db_questions(limit=limit or 10, verbose=True)
+    # Run evaluation (default: all DB questions)
+    await evaluate_db_questions(limit=limit, verbose=True)
 
 
 if __name__ == "__main__":

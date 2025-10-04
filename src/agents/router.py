@@ -73,17 +73,19 @@ Available data sources:
 - "db": SQL database with energy and CO2 data (owid_energy_data, owid_co2_data tables)
   * Use for: country-level statistics, emissions, energy consumption, years, temporal comparisons
   * Keywords: CO2, emissions, energy, electricity, consumption, countries, years (2015-2021)
+  * NOT AVAILABLE: GDP, economic data, population (only energy/emissions)
 
 - "wikipedia": Wikipedia encyclopedia
-  * Use for: general knowledge, company information, definitions, historical facts
-  * Keywords: what is, who is, history, location, headquarters
+  * Use for: general knowledge, company information, definitions, historical facts, GDP data
+  * Keywords: what is, who is, history, location, headquarters, GDP, economy
 
 - "rag": PDF annual reports (Erste Group, GSK, Swisscom)
   * Use for: company-specific data from annual reports, ESG metrics, financial data
   * Keywords: Erste, GSK, Swisscom, annual report, page numbers, specific company metrics
 
-- "hybrid": Multiple sources needed
-  * Use for: questions requiring combination of database + PDFs, or cross-source calculations
+- "hybrid": Multiple sources needed OR data not available in any source
+  * Use for: questions requiring combination of sources, or GDP/economic data not in database
+  * Use when data might not be available
 
 Respond with ONLY a JSON object in this exact format:
 {{
@@ -93,8 +95,8 @@ Respond with ONLY a JSON object in this exact format:
 }}"""
 
         response = self.client.messages.create(
-            model="claude-3-5-haiku-20241022",
-            max_tokens=300,
+            model="claude-sonnet-4-5-20250929",
+            max_tokens=2048,
             temperature=0.0,
             messages=[{"role": "user", "content": prompt}],
         )

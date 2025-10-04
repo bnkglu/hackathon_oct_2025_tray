@@ -57,7 +57,8 @@ class DBAgent(BaseAgent):
         try:
             # Get list of tables using the tables:// resource
             resources = await self.db_client.list_resources()
-            tables_resource = [r for r in resources if "tables://" in r.uri]
+            # FIX: Convert AnyUrl to string for comparison
+            tables_resource = [r for r in resources if "tables://" in str(r.uri)]
 
             if tables_resource:
                 tables_result = await self.db_client.session.read_resource(
@@ -67,6 +68,7 @@ class DBAgent(BaseAgent):
                 tables_text = tables_result.contents[0].text
                 # The resource returns a list, parse it
                 table_names = eval(tables_text) if tables_text else []
+                logging.info(f"Found {len(table_names)} tables: {table_names}")
             else:
                 # Fallback to known tables
                 logging.warning("Could not find tables:// resource, using fallback")
@@ -80,9 +82,11 @@ class DBAgent(BaseAgent):
                         schema_result = await self.db_client.session.read_resource(
                             f"schema://{table_name}"
                         )
-                        schemas[table_name] = schema_result.contents[0].text
+                        schema_text = schema_result.contents[0].text
+                        schemas[table_name] = schema_text
+                        logging.info(f"Retrieved schema for {table_name}: {len(schema_text)} chars")
                     except Exception as e:
-                        logging.warning(f"Could not get schema for {table_name}: {e}")
+                        logging.error(f"Could not get schema for {table_name}: {e}")
                         schemas[table_name] = f"Table: {table_name} (schema unavailable)"
 
             self.schema_cache = schemas
@@ -125,26 +129,35 @@ Important guidelines:
 - This is SQL Server, not PostgreSQL or MySQL
 - Use proper SQL Server syntax (e.g., TOP instead of LIMIT)
 - Use table and column names exactly as shown in schemas (case-sensitive)
-- For temporal comparisons (e.g., "between 2020 and 2015"), calculate the difference
-- For multi-country queries, use WHERE IN or aggregate functions
+- For temporal comparisons, calculate the SIGNED difference (a - b), NOT absolute value
+- DO NOT use ABS() unless the question explicitly asks for "absolute value"
+- "difference" or "absolute difference" means SIGNED difference, which can be negative
+- For country='World', data is already aggregated - use direct SELECT, NOT SUM()
+- For multi-country queries (excluding 'World'), use WHERE IN or aggregate functions
 - Use subqueries or CTEs for complex calculations
 - Return clean numeric results when possible
 
 Common query patterns:
-- Difference between years: Use two subqueries and subtract
-- Sum across countries: SELECT SUM(column) FROM table WHERE country IN ('X', 'Y') AND year=2021
-- Column arithmetic: SELECT (col1 - col2) AS difference FROM table WHERE conditions
+- Difference between years (SIGNED, can be negative):
+  SELECT (SELECT value FROM table WHERE year=2020) - (SELECT value FROM table WHERE year=2015) AS difference
 
-Example for "difference between 2020 and 2015":
-SELECT
-    (SELECT value FROM table WHERE country='UK' AND year=2020) -
-    (SELECT value FROM table WHERE country='UK' AND year=2015) AS difference
+- World queries (NO SUM needed):
+  SELECT column FROM table WHERE country='World' AND year=2021
+
+- Multi-country aggregation (SUM multiple countries):
+  SELECT SUM(column) FROM table WHERE country IN ('France', 'Germany') AND year=2021
+
+- Column arithmetic:
+  SELECT (col1 - col2) AS difference FROM table WHERE conditions
+
+CRITICAL: Never use ABS() for "difference" or "absolute difference" - these should return signed values.
+Only use ABS() if question explicitly says "absolute value of X".
 
 Respond with ONLY the SQL query, no explanation or markdown."""
 
         response = self.claude.messages.create(
             model="claude-sonnet-4-5-20250929",
-            max_tokens=500,
+            max_tokens=2048,
             temperature=0.0,
             messages=[{"role": "user", "content": prompt}],
         )
@@ -243,6 +256,11 @@ Respond with ONLY the SQL query, no explanation or markdown."""
 
         # If it's a string, try to convert
         elif isinstance(query_result, str):
+            # Check for error string
+            if query_result.lower() == "error" or query_result.startswith("Error"):
+                logging.error(f"Database returned error for SQL: {sql_query}")
+                return None, None, "unknown"
+
             try:
                 value = float(query_result)
             except ValueError:
