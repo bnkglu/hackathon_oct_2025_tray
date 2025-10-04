@@ -22,6 +22,7 @@ import os
 
 from src.agents.router import RouterAgent
 from src.agents.db_agent import DBAgent
+from src.agents.rag_agent import RAGAgent
 from src.agents.aggregator import Aggregator
 from src.agents.evaluator import Evaluator
 
@@ -44,12 +45,14 @@ class Agent:
         # Specialized agents (initialized later)
         self.router = None
         self.db_agent = None
+        self.rag_agent = None
         self.aggregator = Aggregator()
         self.evaluator = Evaluator()
 
         # MCP clients
         self.database_client = None
         self.wikipedia_client = None
+        self.vector_client = None
 
     async def initialise_servers(self):
         """
@@ -98,6 +101,27 @@ class Agent:
                 except:
                     pass
             self.wikipedia_client = None
+
+        # Initialize Vector MCP server for RAG
+        try:
+            self.vector_client = MCPClient()
+            await self.vector_client.connect_to_server(
+                "python", ["-m", "src.mcp_servers.vector_server"]
+            )
+            logging.info("✓ Vector MCP server initialized")
+            
+            # Initialize RAG Agent
+            self.rag_agent = RAGAgent(self.vector_client, self.anthropic)
+            logging.info("✓ RAG Agent initialized")
+        except Exception as e:
+            logging.warning(f"Vector MCP server not available: {e}")
+            if self.vector_client is not None:
+                try:
+                    await self.vector_client.cleanup()
+                except:
+                    pass
+            self.vector_client = None
+            self.rag_agent = None
 
         # Initialize Router Agent
         self.router = RouterAgent(self.anthropic)
@@ -153,14 +177,19 @@ class Agent:
                     "comment": "Wikipedia agent not yet implemented",
                 }
 
+            elif routing.route_type == "rag" and self.rag_agent:
+                # Use RAG Agent
+                agent_response = await self.rag_agent.process(question)
+                aggregated = self.aggregator.aggregate_single(agent_response, question)
+            
             elif routing.route_type == "rag":
-                # TODO: Implement RAG agent
-                logging.warning("RAG agent not yet implemented")
+                # RAG agent not available
+                logging.warning("RAG agent not initialized - vector database may not be available")
                 aggregated = {
                     "value": None,
                     "unit": None,
                     "sources": [],
-                    "comment": "RAG agent not yet implemented",
+                    "comment": "RAG agent not available - please ensure vector database is set up",
                 }
 
             elif routing.route_type == "hybrid":
@@ -291,6 +320,13 @@ async def main(
             except Exception as e:
                 logging.warning(f"Error cleaning up Database client: {e}")
             agent.database_client = None
+            
+        if agent.vector_client is not None:
+            try:
+                await agent.vector_client.cleanup()
+            except Exception as e:
+                logging.warning(f"Error cleaning up Vector client: {e}")
+            agent.vector_client = None
 
     # Save results
     output_path = get_root_dir() / output_file
