@@ -4,7 +4,7 @@ Utility functions for project path management.
 
 from pathlib import Path
 
-project_name = "hackathon_oct_2025"
+project_name = "hackathon_oct_2025_tray"
 
 def get_root_dir(project_name: str = project_name) -> Path:
     """
