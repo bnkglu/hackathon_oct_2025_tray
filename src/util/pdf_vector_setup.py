@@ -11,7 +11,7 @@ import faiss
 import numpy as np
 from pypdf import PdfReader
 from anthropic import Anthropic
-import voyageai
+from sentence_transformers import SentenceTransformer
 from typing import List, Dict, Any
 from tqdm import tqdm
 import threading
@@ -106,16 +106,18 @@ def parse_pdfs_to_docs(data_dir: str = "data/annual_reports") -> List[Dict[str, 
 def add_contextual_embeddings(
     docs: List[Dict[str, Any]],
     anthropic_api_key: str,
-    voyage_api_key: str
+    voyage_api_key: str = None
 ) -> List[Dict[str, Any]]:
     """
     Add contextual information to each chunk using Claude,
-    then generate embeddings with Voyage AI.
+    then generate embeddings with Sentence Transformers (local).
 
     Uses prompt caching for cost efficiency.
     """
     anthropic_client = Anthropic(api_key=anthropic_api_key)
-    voyage_client = voyageai.Client(api_key=voyage_api_key)
+    # Use Sentence Transformers instead of Voyage AI (runs locally, no rate limits)
+    print("Loading Sentence Transformer model (all-MiniLM-L6-v2)...")
+    embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
 
     DOCUMENT_CONTEXT_PROMPT = """
 <document>
@@ -123,37 +125,85 @@ def add_contextual_embeddings(
 </document>
 """
 
-    CHUNK_CONTEXT_PROMPT = """
-Here is the chunk we want to situate within the whole document
-<chunk>
-{chunk_content}
-</chunk>
+    BATCH_CHUNK_CONTEXT_PROMPT = """
+Here are {num_chunks} chunks from the document. For each chunk, provide a short succinct context to situate it within the overall document for search retrieval purposes.
 
-Please give a short succinct context to situate this chunk within the overall document for the purposes of improving search retrieval of the chunk.
-Answer only with the succinct context and nothing else.
+{chunks_text}
+
+Respond with ONLY a JSON array containing {num_chunks} context strings, one for each chunk in order. Format:
+["context for chunk 1", "context for chunk 2", ...]
 """
 
-    def situate_context(doc_content: str, chunk_content: str):
-        """Generate context for a chunk using Claude with prompt caching."""
+    def situate_context_batch(doc_content: str, chunks: List[str], doc_summary: str = None):
+        """Generate context for multiple chunks in a single Claude request."""
+        # For very large documents, use a summary instead of full content
+        # Estimate: 1 token ≈ 4 chars, so 200k tokens ≈ 800k chars
+        # Use summary if document is > 500k chars to stay safe
+        if len(doc_content) > 500000:
+            if not doc_summary:
+                # Create a brief summary (first 100k chars as context)
+                context_text = doc_content[:100000] + "\n\n[Document continues but truncated for context...]"
+            else:
+                context_text = doc_summary
+        else:
+            context_text = doc_content
+
+        # Format chunks for prompt
+        chunks_text = ""
+        for i, chunk in enumerate(chunks, 1):
+            chunks_text += f"\n<chunk{i}>\n{chunk}\n</chunk{i}>\n"
+
         response = anthropic_client.messages.create(
-            model="claude-3-haiku-20240307",
-            max_tokens=1000,
+            model="claude-sonnet-4-5-20250929",
+            max_tokens=4096,
             temperature=0.0,
             system=[
                 {
                     "type": "text",
-                    "text": DOCUMENT_CONTEXT_PROMPT.format(doc_content=doc_content),
+                    "text": DOCUMENT_CONTEXT_PROMPT.format(doc_content=context_text),
                     "cache_control": {"type": "ephemeral"}  # Cache the document
                 }
             ],
             messages=[
                 {
                     "role": "user",
-                    "content": CHUNK_CONTEXT_PROMPT.format(chunk_content=chunk_content),
+                    "content": BATCH_CHUNK_CONTEXT_PROMPT.format(
+                        num_chunks=len(chunks),
+                        chunks_text=chunks_text
+                    ),
                 }
             ]
         )
-        return response.content[0].text, response.usage
+
+        # Parse JSON response
+        import json as json_module
+        response_text = response.content[0].text.strip()
+
+        # Debug: Check if response is empty
+        if not response_text:
+            raise ValueError(f"Empty response from Claude for {len(chunks)} chunks")
+
+        # Try to extract JSON array if response contains additional text
+        if not response_text.startswith('['):
+            # Find the JSON array in the response
+            import re
+            json_match = re.search(r'\[.*\]', response_text, re.DOTALL)
+            if json_match:
+                response_text = json_match.group(0)
+            else:
+                # If no JSON array found, log the response and raise error
+                print(f"\n⚠️  Warning: Could not find JSON array in response:")
+                print(f"Response (first 500 chars): {response_text[:500]}")
+                raise ValueError(f"No JSON array found in response")
+
+        try:
+            contexts = json_module.loads(response_text)
+        except json_module.JSONDecodeError as e:
+            print(f"\n⚠️  JSON parsing error:")
+            print(f"Response text (first 1000 chars): {response_text[:1000]}")
+            raise
+
+        return contexts, response.usage
 
     # Track token usage
     token_counts = {
@@ -169,22 +219,29 @@ Answer only with the succinct context and nothing else.
     total_chunks = sum(len(doc["chunks"]) for doc in docs)
 
     print("Generating contextual information for chunks...")
-    print("(Adding delays to respect rate limits)")
+    print("(Using batch processing to respect rate limits)")
+
+    BATCH_SIZE = 5  # Process 5 chunks per API call
 
     with tqdm(total=total_chunks, desc="Contextualizing") as pbar:
         for doc in docs:
             doc_content = doc["content"]
+            chunks = doc["chunks"]
 
-            for chunk in doc["chunks"]:
-                # Generate context with retry logic
+            # Process chunks in batches
+            for i in range(0, len(chunks), BATCH_SIZE):
+                batch_chunks = chunks[i:i+BATCH_SIZE]
+                chunk_contents = [c["content"] for c in batch_chunks]
+
+                # Generate contexts for batch with retry logic
                 max_retries = 3
                 for attempt in range(max_retries):
                     try:
-                        context, usage = situate_context(doc_content, chunk["content"])
+                        contexts, usage = situate_context_batch(doc_content, chunk_contents)
                         break
                     except Exception as e:
                         if "rate_limit" in str(e).lower() and attempt < max_retries - 1:
-                            wait_time = (attempt + 1) * 5  # 5, 10, 15 seconds
+                            wait_time = (attempt + 1) * 10  # 10, 20, 30 seconds
                             pbar.write(f"Rate limit hit, waiting {wait_time}s...")
                             time.sleep(wait_time)
                         else:
@@ -197,24 +254,26 @@ Answer only with the succinct context and nothing else.
                     token_counts['cache_read'] += usage.cache_read_input_tokens
                     token_counts['cache_creation'] += usage.cache_creation_input_tokens
 
-                # Combine chunk with context
-                contextualized_text = f"{chunk['content']}\n\nContext: {context}"
+                # Process each chunk-context pair
+                for chunk, context in zip(batch_chunks, contexts):
+                    # Combine chunk with context
+                    contextualized_text = f"{chunk['content']}\n\nContext: {context}"
 
-                all_chunks.append({
-                    "text_to_embed": contextualized_text,
-                    "metadata": {
-                        "source_name": doc["doc_id"],
-                        "source_type": "pdf",
-                        "chunk_id": chunk["chunk_id"],
-                        "original_content": chunk["content"],
-                        "context": context
-                    }
-                })
+                    all_chunks.append({
+                        "text_to_embed": contextualized_text,
+                        "metadata": {
+                            "source_name": doc["doc_id"],
+                            "source_type": "pdf",
+                            "chunk_id": chunk["chunk_id"],
+                            "original_content": chunk["content"],
+                            "context": context
+                        }
+                    })
 
-                pbar.update(1)
+                    pbar.update(1)
 
-                # Add delay to respect rate limits (0.1s = max 10 requests/sec)
-                time.sleep(0.1)
+                # Add delay between batches to respect rate limits
+                time.sleep(2.0)
 
     # Print token usage stats
     print(f"\n📊 Token Usage Statistics:")
@@ -229,21 +288,17 @@ Answer only with the succinct context and nothing else.
         print(f"  💰 Cache savings: {savings:.1f}% of tokens read from cache (90% discount!)\n")
 
     # Generate embeddings
-    print("Generating embeddings with Voyage AI...")
+    print("Generating embeddings with Sentence Transformers...")
     texts_to_embed = [chunk["text_to_embed"] for chunk in all_chunks]
 
-    batch_size = 128
-    embeddings = []
-
-    with tqdm(total=len(texts_to_embed), desc="Embedding") as pbar:
-        for i in range(0, len(texts_to_embed), batch_size):
-            batch = texts_to_embed[i:i + batch_size]
-            batch_embeddings = voyage_client.embed(
-                batch,
-                model="voyage-2"
-            ).embeddings
-            embeddings.extend(batch_embeddings)
-            pbar.update(len(batch))
+    # Use batch encoding for efficiency
+    print(f"Encoding {len(texts_to_embed)} chunks...")
+    embeddings = embedding_model.encode(
+        texts_to_embed,
+        show_progress_bar=True,
+        batch_size=32,
+        convert_to_numpy=True
+    )
 
     # Add embeddings to chunks
     for chunk, embedding in zip(all_chunks, embeddings):
@@ -291,7 +346,7 @@ def store_vector_db(
 
 
 def main():
-    """Main setup function."""
+    """Main setup function with incremental processing."""
     try:
         print("=" * 70)
         print("PDF to Vector DB Setup (Contextual Embeddings)")
@@ -307,6 +362,39 @@ def main():
         if not voyage_api_key:
             raise ValueError("VOYAGE_API_KEY not set in environment")
 
+        # Define paths
+        index_path = "data/vector_db/vector_index.faiss"
+        metadata_path = "data/vector_db/vector_metadata.json"
+        progress_path = "data/vector_db/processed_pdfs.json"
+
+        # Load progress tracking
+        processed_pdfs = set()
+        if os.path.exists(progress_path):
+            with open(progress_path, "r") as f:
+                processed_pdfs = set(json.load(f))
+            print(f"📋 Found {len(processed_pdfs)} already processed PDFs\n")
+
+        # Load existing embeddings if they exist
+        all_chunks = []
+        if os.path.exists(metadata_path) and os.path.exists(index_path):
+            with open(metadata_path, "r") as f:
+                existing_metadata = json.load(f)
+
+            # Load existing FAISS index to get embeddings
+            import faiss
+            index = faiss.read_index(index_path)
+
+            # Reconstruct chunks with embeddings
+            for i, metadata in enumerate(existing_metadata):
+                embedding = index.reconstruct(i)
+                all_chunks.append({
+                    "text_to_embed": f"{metadata['original_content']}\n\nContext: {metadata['context']}",
+                    "metadata": metadata,
+                    "embedding": embedding.tolist()
+                })
+
+            print(f"📦 Loaded {len(existing_metadata)} existing chunks from vector DB\n")
+
         # Step 1: Parse PDFs
         print("Step 1: Parsing PDFs...")
         docs = parse_pdfs_to_docs()
@@ -315,19 +403,62 @@ def main():
             print("❌ No documents parsed!")
             return False
 
-        # Step 2: Add contextual embeddings
-        print("Step 2: Adding contextual embeddings...")
-        chunks_with_embeddings = add_contextual_embeddings(
-            docs,
-            anthropic_api_key,
-            voyage_api_key
-        )
+        # Step 2: Process each PDF individually
+        print("Step 2: Processing PDFs with contextual embeddings...")
+        new_chunks_added = 0
 
-        # Step 3: Store vector database
-        print("Step 3: Storing vector database...")
-        success = store_vector_db(chunks_with_embeddings)
+        for doc in docs:
+            doc_id = doc["doc_id"]
 
-        return success
+            # Skip if already processed
+            if doc_id in processed_pdfs:
+                print(f"⏭️  Skipping {doc_id} (already processed)")
+                continue
+
+            print(f"\n{'='*70}")
+            print(f"Processing: {doc_id}")
+            print(f"{'='*70}")
+
+            try:
+                # Add contextual embeddings for this document
+                chunks_with_embeddings = add_contextual_embeddings(
+                    [doc],  # Process one document at a time
+                    anthropic_api_key,
+                    voyage_api_key
+                )
+
+                # Append to all chunks
+                all_chunks.extend(chunks_with_embeddings)
+                new_chunks_added += len(chunks_with_embeddings)
+
+                # Save progress immediately
+                print(f"\n💾 Saving progress for {doc_id}...")
+                store_vector_db(all_chunks, index_path, metadata_path)
+
+                # Mark as processed
+                processed_pdfs.add(doc_id)
+                os.makedirs(os.path.dirname(progress_path), exist_ok=True)
+                with open(progress_path, "w") as f:
+                    json.dump(list(processed_pdfs), f, indent=2)
+
+                print(f"✅ Completed {doc_id} ({len(chunks_with_embeddings)} chunks)")
+
+            except Exception as e:
+                print(f"❌ Error processing {doc_id}: {e}")
+                import traceback
+                traceback.print_exc()
+                print(f"⚠️  Continuing with next document...")
+                continue
+
+        # Final summary
+        print(f"\n{'='*70}")
+        print(f"✅ Processing complete!")
+        print(f"{'='*70}")
+        print(f"Total processed PDFs: {len(processed_pdfs)}")
+        print(f"New chunks added this run: {new_chunks_added}")
+        print(f"Total chunks in vector DB: {len(all_chunks)}")
+
+        return True
 
     except Exception as e:
         print(f"\n❌ Error: {e}")
